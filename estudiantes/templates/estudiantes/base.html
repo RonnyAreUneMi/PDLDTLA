@@ -10,7 +10,9 @@
 <body class="bg-light">
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
         <div class="container">
-            <a class="navbar-brand" href="{% url 'estudiantes:list' %}">PDLDTLA</a>
+            <a class="navbar-brand fw-bold" href="{% url 'estudiantes:list' %}">
+                PDLDTLA <span class="fw-light opacity-75">| Gestion de Estudiantes</span>
+            </a>
             <div class="navbar-nav">
                 <a class="nav-link" href="{% url 'estudiantes:list' %}">Estudiantes</a>
                 <a class="nav-link" href="{% url 'estudiantes:create' %}">Nuevo</a>

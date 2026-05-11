@@ -1,0 +1,37 @@
+{% extends "estudiantes/base.html" %}
+
+{% block title %}{{ estudiante.nombre_completo }} - PDLDTLA{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h2 class="h5 mb-0">{{ estudiante.nombre_completo }}</h2>
+                {% if estudiante.activo %}
+                    <span class="badge bg-success">Activo</span>
+                {% else %}
+                    <span class="badge bg-secondary">Inactivo</span>
+                {% endif %}
+            </div>
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-4">Cedula</dt><dd class="col-sm-8"><code>{{ estudiante.cedula }}</code></dd>
+                    <dt class="col-sm-4">Correo</dt><dd class="col-sm-8">{{ estudiante.correo }}</dd>
+                    <dt class="col-sm-4">Carrera</dt><dd class="col-sm-8">{{ estudiante.get_carrera_display }}</dd>
+                    <dt class="col-sm-4">Semestre</dt><dd class="col-sm-8">{{ estudiante.semestre }}</dd>
+                    <dt class="col-sm-4">Registrado</dt><dd class="col-sm-8">{{ estudiante.creado_en|date:"d/m/Y H:i" }}</dd>
+                    <dt class="col-sm-4">Ultima edicion</dt><dd class="col-sm-8">{{ estudiante.actualizado_en|date:"d/m/Y H:i" }}</dd>
+                </dl>
+            </div>
+            <div class="card-footer bg-white d-flex justify-content-between">
+                <a href="{% url 'estudiantes:list' %}" class="btn btn-outline-secondary">Volver</a>
+                <div>
+                    <a href="{% url 'estudiantes:update' estudiante.pk %}" class="btn btn-warning">Editar</a>
+                    <a href="{% url 'estudiantes:delete' estudiante.pk %}" class="btn btn-danger">Eliminar</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

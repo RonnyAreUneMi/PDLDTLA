@@ -129,3 +129,20 @@ class EstudianteFormValidationTests(TestCase):
         form = EstudianteForm(self.BASE_VALIDA)
         self.assertTrue(form.is_valid(), form.errors)
         self.assertEqual(form.cleaned_data["correo"], "carla@test.com")
+
+
+class OrdenListadoTests(TestCase):
+    def test_listado_ordenado_por_apellido_nombre(self):
+        Estudiante.objects.create(cedula="1700000001", nombres="Zoraida", apellidos="Aguilar", correo="z@t.com")
+        Estudiante.objects.create(cedula="1700000002", nombres="Andres", apellidos="Zambrano", correo="a@t.com")
+        Estudiante.objects.create(cedula="1700000003", nombres="Beatriz", apellidos="Mora", correo="b@t.com")
+
+        resp = self.client.get(reverse("estudiantes:list"))
+        contenido = resp.content.decode("utf-8")
+
+        pos_aguilar = contenido.find("Aguilar")
+        pos_mora = contenido.find("Mora")
+        pos_zambrano = contenido.find("Zambrano")
+
+        self.assertTrue(0 < pos_aguilar < pos_mora < pos_zambrano,
+                        "El listado debe estar ordenado alfabeticamente por apellido")

@@ -11,7 +11,7 @@ def estudiante_list(request):
     q = (request.GET.get("q") or "").strip()
     carrera = (request.GET.get("carrera") or "").strip()
 
-    estudiantes = Estudiante.objects.all()
+    estudiantes = Estudiante.objects.all().order_by("apellidos", "nombres")
     if q:
         estudiantes = estudiantes.filter(
             Q(cedula__icontains=q)

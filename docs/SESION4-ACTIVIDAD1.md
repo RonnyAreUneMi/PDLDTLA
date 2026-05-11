@@ -15,7 +15,7 @@
 
 - **Codigo fuente etiquetado:** tag v1.0.0 en https://github.com/RonnyAreUneMi/PDLDTLA/tags
 - **Archivo comprimido:** pdldtla-v1.0.0.zip (adjunto al Release)
-- **Changelog:** CHANGELOG.md siguiendo Keep a Changelog
+- **Changelog:** [CHANGELOG.md](https://github.com/RonnyAreUneMi/PDLDTLA/blob/main/CHANGELOG.md) siguiendo Keep a Changelog
 
 ## Comandos ejecutados
 

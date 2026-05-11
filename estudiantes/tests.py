@@ -60,3 +60,30 @@ class EstudianteCRUDViewsTests(TestCase):
         resp = self.client.post(reverse("estudiantes:delete", args=[self.estudiante.pk]))
         self.assertEqual(resp.status_code, 302)
         self.assertFalse(Estudiante.objects.filter(pk=self.estudiante.pk).exists())
+
+
+class BuscadorEstudiantesTests(TestCase):
+    def setUp(self):
+        Estudiante.objects.create(
+            cedula="1111111111", nombres="Ana", apellidos="Castro",
+            correo="ana@uni.edu", carrera="SIS", semestre=2,
+        )
+        Estudiante.objects.create(
+            cedula="2222222222", nombres="Bruno", apellidos="Lopez",
+            correo="bruno@uni.edu", carrera="SOF", semestre=4,
+        )
+
+    def test_busqueda_por_apellido_filtra_resultados(self):
+        resp = self.client.get(reverse("estudiantes:list"), {"q": "Castro"})
+        self.assertContains(resp, "Ana")
+        self.assertNotContains(resp, "Bruno")
+
+    def test_filtro_por_carrera(self):
+        resp = self.client.get(reverse("estudiantes:list"), {"carrera": "SOF"})
+        self.assertContains(resp, "Bruno")
+        self.assertNotContains(resp, "Ana")
+
+    def test_busqueda_sin_resultados_muestra_total_cero(self):
+        resp = self.client.get(reverse("estudiantes:list"), {"q": "Zzz_inexistente"})
+        self.assertEqual(resp.status_code, 200)
+        self.assertContains(resp, "(0)")

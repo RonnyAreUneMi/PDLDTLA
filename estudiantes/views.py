@@ -1,4 +1,5 @@
 from django.contrib import messages
+from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 
@@ -7,11 +8,30 @@ from .models import Estudiante
 
 
 def estudiante_list(request):
+    q = (request.GET.get("q") or "").strip()
+    carrera = (request.GET.get("carrera") or "").strip()
+
     estudiantes = Estudiante.objects.all()
+    if q:
+        estudiantes = estudiantes.filter(
+            Q(cedula__icontains=q)
+            | Q(nombres__icontains=q)
+            | Q(apellidos__icontains=q)
+            | Q(correo__icontains=q)
+        )
+    if carrera:
+        estudiantes = estudiantes.filter(carrera=carrera)
+
     return render(
         request,
         "estudiantes/list.html",
-        {"estudiantes": estudiantes, "total": estudiantes.count()},
+        {
+            "estudiantes": estudiantes,
+            "total": estudiantes.count(),
+            "q": q,
+            "carrera_seleccionada": carrera,
+            "carreras": Estudiante.CARRERAS,
+        },
     )
 
 

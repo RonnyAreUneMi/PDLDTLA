@@ -1,6 +1,7 @@
 from django.test import TestCase
 from django.urls import reverse
 
+from .forms import EstudianteForm
 from .models import Estudiante
 
 
@@ -87,3 +88,44 @@ class BuscadorEstudiantesTests(TestCase):
         resp = self.client.get(reverse("estudiantes:list"), {"q": "Zzz_inexistente"})
         self.assertEqual(resp.status_code, 200)
         self.assertContains(resp, "(0)")
+
+
+class EstudianteFormValidationTests(TestCase):
+    BASE_VALIDA = {
+        "cedula": "1712345678",
+        "nombres": "Carla",
+        "apellidos": "Mendoza",
+        "correo": "Carla@TEST.COM",
+        "carrera": "SIS",
+        "semestre": 3,
+        "activo": "on",
+    }
+
+    def test_cedula_no_numerica_rechazada(self):
+        data = self.BASE_VALIDA | {"cedula": "ABC1234567"}
+        form = EstudianteForm(data)
+        self.assertFalse(form.is_valid())
+        self.assertIn("cedula", form.errors)
+
+    def test_cedula_con_longitud_invalida_rechazada(self):
+        data = self.BASE_VALIDA | {"cedula": "12345"}
+        form = EstudianteForm(data)
+        self.assertFalse(form.is_valid())
+        self.assertIn("cedula", form.errors)
+
+    def test_cedula_provincia_invalida_rechazada(self):
+        data = self.BASE_VALIDA | {"cedula": "9912345678"}
+        form = EstudianteForm(data)
+        self.assertFalse(form.is_valid())
+        self.assertIn("cedula", form.errors)
+
+    def test_semestre_fuera_de_rango_rechazado(self):
+        data = self.BASE_VALIDA | {"semestre": 15}
+        form = EstudianteForm(data)
+        self.assertFalse(form.is_valid())
+        self.assertIn("semestre", form.errors)
+
+    def test_correo_se_normaliza_a_minusculas(self):
+        form = EstudianteForm(self.BASE_VALIDA)
+        self.assertTrue(form.is_valid(), form.errors)
+        self.assertEqual(form.cleaned_data["correo"], "carla@test.com")

@@ -1,4 +1,5 @@
 from django.contrib import messages
+from django.core.paginator import Paginator
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -22,12 +23,18 @@ def estudiante_list(request):
     if carrera:
         estudiantes = estudiantes.filter(carrera=carrera)
 
+    total = estudiantes.count()
+    paginator = Paginator(estudiantes, 10)
+    page_obj = paginator.get_page(request.GET.get("page"))
+
     return render(
         request,
         "estudiantes/list.html",
         {
-            "estudiantes": estudiantes,
-            "total": estudiantes.count(),
+            "estudiantes": page_obj.object_list,
+            "page_obj": page_obj,
+            "is_paginated": page_obj.has_other_pages(),
+            "total": total,
             "q": q,
             "carrera_seleccionada": carrera,
             "carreras": Estudiante.CARRERAS,

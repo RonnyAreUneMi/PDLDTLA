@@ -146,3 +146,28 @@ class OrdenListadoTests(TestCase):
 
         self.assertTrue(0 < pos_aguilar < pos_mora < pos_zambrano,
                         "El listado debe estar ordenado alfabeticamente por apellido")
+
+
+class PaginacionListadoTests(TestCase):
+    def setUp(self):
+        for i in range(25):
+            Estudiante.objects.create(
+                cedula=f"17{i:08d}",
+                nombres=f"Nombre{i:02d}",
+                apellidos=f"Apellido{i:02d}",
+                correo=f"user{i}@uni.edu",
+            )
+
+    def test_listado_pagina_10_resultados_por_pagina(self):
+        resp = self.client.get(reverse("estudiantes:list"))
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(len(resp.context["page_obj"].object_list), 10)
+
+    def test_listado_navega_a_segunda_pagina(self):
+        resp = self.client.get(reverse("estudiantes:list"), {"page": 2})
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.context["page_obj"].number, 2)
+
+    def test_total_independiente_de_la_pagina(self):
+        resp = self.client.get(reverse("estudiantes:list"))
+        self.assertEqual(resp.context["total"], 25)
